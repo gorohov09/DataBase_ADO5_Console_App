@@ -18,6 +18,23 @@ namespace DataBase_ADO5
 
         private static SqlConnection sqlConnection = null;
 
+        static void SelectDateBase(SqlDataReader sqlDataReader)
+        {
+            while (sqlDataReader.Read())
+            {
+                Console.WriteLine($"{sqlDataReader["Id"]} {sqlDataReader["FIO"]} {sqlDataReader["Birthday"]}" +
+                    $" {sqlDataReader["University"]} {sqlDataReader["GroupNumber"]} {sqlDataReader["Course"]}" +
+                    $" {sqlDataReader["AverageScore"]}");
+
+                Console.WriteLine(new string('-', 30));
+            }
+
+            if (sqlDataReader != null)
+            {
+                sqlDataReader.Close();
+            }
+        }
+
         static void Main(string[] args)
         {
             sqlConnection = new SqlConnection(connectionString);
@@ -54,39 +71,49 @@ namespace DataBase_ADO5
                     }
                     #endregion
 
-                    SqlCommand sqlCommand = new SqlCommand(command, sqlConnection);
+                    SqlCommand sqlCommand = null;
 
-                    switch (command.Split(' ')[0].ToLower())
+                    string[] commandArray = command.ToLower().Split(' ');
+
+                    switch (commandArray[0])
                     {
-                        case "select":
+                        case "selectall":
+                            sqlCommand = new SqlCommand("SELECT * FROM Student", sqlConnection);
 
                             sqlDataReader = sqlCommand.ExecuteReader();
 
-                            while (sqlDataReader.Read())
-                            {
-                                Console.WriteLine($"{sqlDataReader["Id"]} {sqlDataReader["FIO"]} {sqlDataReader["Birthday"]}" +
-                                    $" {sqlDataReader["University"]} {sqlDataReader["GroupNumber"]} {sqlDataReader["Course"]}" +
-                                    $" {sqlDataReader["AverageScore"]}");
+                            SelectDateBase(sqlDataReader);
+                            break;
 
-                                Console.WriteLine(new string('-', 30));
-                            }
+                        case "select":
 
-                            if (sqlDataReader != null)
-                            {
-                                sqlDataReader.Close();
-                            }
+                            sqlCommand = new SqlCommand(command, sqlConnection);
+
+                            sqlDataReader = sqlCommand.ExecuteReader();
+
+                            SelectDateBase(sqlDataReader);
                             break;
 
                         case "insert":
+                            sqlCommand = new SqlCommand(command, sqlConnection);
                             Console.WriteLine($"Добавлено: {sqlCommand.ExecuteNonQuery()} строк");
                             break;
 
                         case "update":
+                            sqlCommand = new SqlCommand(command, sqlConnection);
                             Console.WriteLine($"Изменено: {sqlCommand.ExecuteNonQuery()} строк");
                             break;
 
                         case "delete":
+                            sqlCommand = new SqlCommand(command, sqlConnection);
                             Console.WriteLine($"Удалено: {sqlCommand.ExecuteNonQuery()} строк");
+                            break;
+
+                        case "sortby":
+                            //sortby fio asc
+                            sqlCommand = new SqlCommand($"SELECT * FROM Student ORDER BY {commandArray[1]} {commandArray[2]}", sqlConnection);
+                            sqlDataReader = sqlCommand.ExecuteReader();
+                            SelectDateBase(sqlDataReader);
                             break;
 
                         default:
