@@ -116,6 +116,61 @@ namespace DataBase_ADO5
                             SelectDateBase(sqlDataReader);
                             break;
 
+                        case "search":
+
+                            if (commandArray[1].Equals("fio"))
+                            {
+                                sqlCommand = new SqlCommand($"SELECT * FROM Student WHERE FIO LIKE N'%{commandArray[2]}%'", sqlConnection);
+                            }
+                            else if (commandArray[1].Equals("birthday"))
+                            {
+                                sqlCommand = new SqlCommand($"SELECT * FROM Student WHERE Birthday = '{commandArray[2]}'", sqlConnection);
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Аргумент {commandArray[1]} некорректен!");
+                            }
+
+                            try
+                            {
+                                sqlDataReader = sqlCommand.ExecuteReader();
+                                SelectDateBase(sqlDataReader);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"Ошибка: {ex.Message}");
+                            }
+                            finally
+                            {
+                                if (sqlDataReader != null)
+                                {
+                                    sqlDataReader.Close();
+                                }
+                            }
+
+                            break;
+
+                        case "clear":
+                            Console.Clear();
+                            break;
+
+                        case "min":
+                            sqlCommand = new SqlCommand("SELECT MIN(AverageScore) FROM Student", sqlConnection);
+                            Console.WriteLine($"Минимальный средний балл: {sqlCommand.ExecuteScalar()}");
+                            break;
+                        case "max":
+                            sqlCommand = new SqlCommand("SELECT MAX(AverageScore) FROM Student", sqlConnection);
+                            Console.WriteLine($"Максимальный средний балл: {sqlCommand.ExecuteScalar()}");
+                            break;
+                        case "avg":
+                            sqlCommand = new SqlCommand("SELECT AVG(AverageScore) FROM Student", sqlConnection);
+                            Console.WriteLine($"Средний балл: {sqlCommand.ExecuteScalar()}");
+                            break;
+                        case "sum":
+                            sqlCommand = new SqlCommand("SELECT SUM(AverageScore) FROM Student", sqlConnection);
+                            Console.WriteLine($"Суммарный балл: {sqlCommand.ExecuteScalar()}");
+                            break;
+
                         default:
                             Console.WriteLine($"Команда {command} некорректна!");
                             break;
