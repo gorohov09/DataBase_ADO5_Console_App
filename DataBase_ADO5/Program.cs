@@ -2,12 +2,13 @@
 using System.Data;
 using System.Data.SqlClient;
 using System.Configuration;
+using System.Collections.Generic;
 
 #region User Manual
-    /* User Manual
-     1. Выход exit
-     
-     */
+/* User Manual
+ 1. Выход exit
+
+ */
 #endregion
 
 namespace DataBase_ADO5
@@ -179,6 +180,28 @@ namespace DataBase_ADO5
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Ошибка: {ex.Message}");
+                }
+            }
+
+            List<Student> students = new List<Student>();
+
+            using(SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                SqlCommand sqlCommand = new SqlCommand();
+                sqlCommand.CommandText = "SELECT * FROM Student";
+                sqlCommand.Connection = connection;
+                SqlDataReader dataReader = sqlCommand.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    students.Add(new Student((int)dataReader["Id"], (string)dataReader["FIO"], (DateTime)dataReader["Birthday"], (string)dataReader["University"],
+                                             (string)dataReader["GroupNumber"], (int)dataReader["Course"], (double)dataReader["AverageScore"]));
+                }
+
+                foreach (var e in students)
+                {
+                    Console.WriteLine(e);
                 }
             }
 
